@@ -1,0 +1,227 @@
+/* Admin Page Styles */
+@use "./variables" as *;
+
+/* Admin Page Layout */
+.page--admin {
+    .page__header {
+        margin-bottom: $spacing-4xl;
+    }
+
+    .page__title {
+        font-size: $font-4xl;
+        font-weight: $font-bold;
+        color: $text-primary;
+        margin-bottom: $spacing-sm;
+    }
+
+    .page__subtitle {
+        font-size: $font-lg;
+        color: $text-muted;
+        font-weight: $font-normal;
+    }
+
+    .page__content {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-4xl;
+    }
+}
+
+/* Admin Section */
+.admin-section {
+    &__title {
+        font-size: $font-xl;
+        font-weight: $font-semibold;
+        color: $text-secondary;
+        margin-bottom: $spacing-xl;
+        padding-bottom: $spacing-md;
+        border-bottom: 2px solid $border-light;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: $spacing-xl;
+
+        @media (max-width: $breakpoint-md) {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+/* Admin Card */
+.admin-card {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xl;
+    padding: $spacing-2xl;
+    background-color: $bg-white;
+    border: 1px solid $border-light;
+    border-radius: $radius-xl;
+    cursor: pointer;
+    transition: 
+        transform $transition-fast,
+        box-shadow $transition-fast,
+        border-color $transition-fast;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.05),
+        0 1px 2px rgba(0, 0, 0, 0.03);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow:
+            0 10px 25px rgba(0, 0, 0, 0.08),
+            0 4px 10px rgba(0, 0, 0, 0.06);
+        border-color: $color-primary-light;
+
+        .admin-card__icon {
+            background: linear-gradient(135deg, $color-primary 0%, $color-primary-hover 100%);
+            transform: scale(1.05);
+        }
+
+        .admin-card__arrow {
+            transform: translateX(4px);
+            color: $color-primary;
+        }
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow:
+            0 4px 10px rgba(0, 0, 0, 0.06),
+            0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Icon Container */
+    &__icon {
+        flex-shrink: 0;
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+        border-radius: $radius-xl;
+        color: $text-white;
+        transition: 
+            transform $transition-fast,
+            background $transition-base;
+
+        svg {
+            width: 28px;
+            height: 28px;
+        }
+    }
+
+    /* Content */
+    &__content {
+        flex: 1;
+        min-width: 0; // Permite que el texto se trunque si es necesario
+    }
+
+    &__title {
+        font-size: $font-lg;
+        font-weight: $font-semibold;
+        color: $text-primary;
+        margin-bottom: $spacing-xs;
+        line-height: 1.4;
+    }
+
+    &__description {
+        font-size: $font-base;
+        color: $text-muted;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* Arrow */
+    &__arrow {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        color: $text-light;
+        transition: 
+            transform $transition-fast,
+            color $transition-fast;
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: $breakpoint-md) {
+    .page--admin {
+        .page__title {
+            font-size: $font-3xl;
+        }
+
+        .page__subtitle {
+            font-size: $font-base;
+        }
+
+        .page__content {
+            gap: $spacing-3xl;
+        }
+    }
+
+    .admin-section {
+        &__title {
+            font-size: $font-lg;
+        }
+
+        &__grid {
+            gap: $spacing-lg;
+        }
+    }
+
+    .admin-card {
+        padding: $spacing-xl;
+        gap: $spacing-lg;
+
+        &__icon {
+            width: 48px;
+            height: 48px;
+
+            svg {
+                width: 24px;
+                height: 24px;
+            }
+        }
+
+        &__title {
+            font-size: $font-md;
+        }
+
+        &__description {
+            font-size: $font-sm;
+        }
+    }
+}
+
+/* Focus States for Accessibility */
+.admin-card:focus {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .admin-card {
+        transition: none;
+
+        &__icon,
+        &__arrow {
+            transition: none;
+        }
+
+        &:hover {
+            transform: none;
+        }
+    }
+}

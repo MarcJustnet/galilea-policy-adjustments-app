@@ -1,0 +1,6 @@
+.git
+dist
+.vscode
+node_modules
+README.md
+stats.html

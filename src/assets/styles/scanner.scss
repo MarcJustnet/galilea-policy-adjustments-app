@@ -1,0 +1,474 @@
+/* Inventory Scanner Styles */
+@use './variables' as *;
+
+.scanner {
+    // min-height: 100vh;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    background: linear-gradient(135deg, $color-gray-50 0%, $color-slate-200 100%);
+
+    &__header {
+        background: $bg-white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid $color-slate-200;
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__branding {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    &__logo {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: $color-primary;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: $text-white;
+        }
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: $color-slate-800;
+    }
+
+    &__subtitle {
+        margin: 0;
+        font-size: 0.875rem;
+        color: $color-slate-500;
+    }
+
+    &__container {
+        padding: 1rem;
+        padding-bottom: 2rem;
+        height: $layout-page-mobile-height;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        overflow-y: auto;
+    }
+
+    &__message-wrapper {
+        // margin-bottom: 0.5rem;
+    }
+
+    /* Location Section */
+    &__location-card {
+        background: $text-white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid $color-slate-200;
+        padding: 1rem;
+    }
+
+    &__location-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+
+        svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: $color-primary;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: $color-slate-800;
+        }
+    }
+
+    &__location-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    &__input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid $color-slate-300;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        &::placeholder {
+            color: #94a3b8;
+            transition: color 0.2s ease;
+        }
+
+        // Estado: Listo para escanear (focused)
+        &--focused {
+            border-color: $color-success !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+
+            &::placeholder {
+                color: $color-success;
+            }
+        }
+
+        // Estado: Pulsa para escanear (idle)
+        &--idle {
+            border-color: $color-danger-light;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.05);
+
+            &::placeholder {
+                color: $color-danger-light;
+            }
+        }
+    }
+
+    /* Location Confirmed Banner */
+    &__location-banner {
+        background: linear-gradient(135deg, $color-primary 0%, #2563eb 100%);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        padding: 1rem;
+        color: $text-white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        position: relative;
+    }
+
+    &__location-info {
+        flex: 1;
+
+        p {
+            margin: 0;
+
+            &:first-child {
+                font-size: 0.75rem;
+                opacity: 0.9;
+                margin-bottom: 0.25rem;
+            }
+
+            &:last-child {
+                font-size: 1.25rem;
+                font-weight: 700;
+            }
+        }
+    }
+
+    &__location-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 0.75rem;
+        border-left: 1px solid rgba(255, 255, 255, 0.3);
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
+
+        p {
+            margin: 0;
+
+            &:first-child {
+                font-size: 0.75rem;
+                opacity: 0.9;
+                margin-bottom: 0.25rem;
+            }
+
+            &:last-child {
+                font-size: 1.5rem;
+                font-weight: 700;
+            }
+        }
+    }
+
+    &__change-location-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: $text-white;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+
+        &:focus {
+            outline: 2px solid $text-white;
+            outline-offset: 2px;
+        }
+    }
+
+    /* Batch Input Section */
+    &__batch-input-card {
+        background: $text-white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid $color-slate-200;
+        padding: 1rem;
+    }
+
+    &__batch-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+
+        svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #10b981;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: $color-slate-800;
+        }
+    }
+
+    &__batch-hint {
+        margin-top: 0.5rem;
+        font-size: 0.75rem;
+        color: $color-slate-500;
+    }
+
+    /* Batch List */
+    &__batch-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    &__batch-list-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+
+        svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: $color-slate-800;
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: $color-slate-800;
+        }
+    }
+}
+
+/* Batch Item Card */
+.batch-item {
+    background: $text-white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid $color-slate-200;
+    padding: 1rem;
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+    }
+
+    &__info {
+        flex: 1;
+
+        h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: $color-slate-800;
+        }
+
+        p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: $color-slate-500;
+        }
+    }
+
+    &__delete {
+        padding: 0.5rem;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #ef4444;
+        transition: all 0.2s ease;
+        border-radius: 0.375rem;
+
+        &:hover {
+            background: #fee2e2;
+        }
+
+        svg {
+            width: 1rem;
+            height: 1rem;
+        }
+    }
+
+    &__fields {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+
+        label {
+            font-size: 0.75rem;
+            color: $color-slate-500;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 2px solid $color-slate-300;
+            border-radius: 0.375rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+
+            &:focus {
+                outline: none;
+                border-color: $color-primary;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            &[type="number"] {
+                appearance: textfield;
+                -moz-appearance: textfield;
+
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+            }
+        }
+    }
+
+    &__total {
+        background: #f1f5f9;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.375rem;
+        text-align: center;
+        font-weight: 700;
+        font-size: 0.875rem;
+        color: $color-slate-800;
+    }
+
+    &__quantity-info {
+        margin-top: 0.5rem;
+        font-size: 0.75rem;
+        color: $color-slate-500;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .scanner {
+        &__title {
+            font-size: 1rem;
+        }
+
+        &__subtitle {
+            font-size: 0.75rem;
+        }
+
+        &__container {
+            padding: 0.75rem;
+            height: $layout-page-mobile-height;
+        }
+    }
+
+    .batch-item {
+        &__fields {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        &__field:last-child {
+            grid-column: 1 / -1;
+        }
+    }
+}
+
+/* Animations */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.scanner__location-banner,
+.batch-item {
+    animation: slideInUp 0.3s ease;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .scanner__location-banner,
+    .batch-item {
+        animation: none;
+    }
+
+    .batch-item {
+        transition: none;
+    }
+}

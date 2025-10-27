@@ -1,0 +1,92 @@
+/* Badge Component Styles */
+@use "./variables" as *;
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-xs $spacing-md;
+    font-size: $font-sm;
+    font-weight: $font-semibold;
+    line-height: 1;
+    border-radius: $radius-full;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    white-space: nowrap;
+
+    /* Default Badge */
+    background-color: $border-light;
+    color: $text-secondary;
+
+    /* Primary Badge */
+    &--primary {
+        background-color: $color-primary-bg;
+        color: $color-primary-dark;
+    }
+
+    /* Secondary Badge */
+    &--secondary {
+        background-color: $bg-lighter;
+        color: $text-muted;
+    }
+
+    /* Success Badge */
+    &--success {
+        background-color: $color-success-bg;
+        color: $color-success-darker;
+    }
+
+    /* Danger Badge */
+    &--danger {
+        background-color: $color-danger-bg;
+        color: $color-danger-darker;
+    }
+
+    /* Warning Badge */
+    &--warning {
+        background-color: $color-warning-bg;
+        color: $color-warning-darker;
+    }
+
+    /* Info Badge */
+    &--info {
+        background-color: $color-info-bg;
+        color: $color-info-dark;
+    }
+
+    /* Small Badge */
+    &--small {
+        padding: 0.125rem $spacing-sm;
+        font-size: $font-xs;
+    }
+
+    /* Large Badge */
+    &--large {
+        padding: 0.375rem $spacing-lg;
+        font-size: $font-base;
+    }
+
+    /* Outline Badge */
+    &--outline {
+        background-color: transparent;
+        border: 1px solid currentColor;
+    }
+
+    /* Dot Badge */
+    &--dot {
+        padding: 0;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+
+        &.badge--small {
+            width: 0.375rem;
+            height: 0.375rem;
+        }
+
+        &.badge--large {
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+    }
+}

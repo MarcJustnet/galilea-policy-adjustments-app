@@ -1,0 +1,156 @@
+/* Page Component Styles */
+@use "./variables" as *;
+
+.page {
+    width: 100%;
+    height: $layout-page-desktop-height;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xl;
+    padding: $spacing-xl;
+    background-color: $color-gray-50;
+
+    /* Page Header */
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e5e7eb;
+
+        h1 {
+            margin: 0;
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        /* Actions in header */
+        &__actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+    }
+
+    /* Page Content */
+    &__content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        overflow: auto;
+    }
+
+    /* Page Footer */
+    &__footer {
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+
+    /* Page Section */
+    &__section {
+        background-color: #ffffff;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        &__title {
+            margin: 0 0 1rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        &__description {
+            margin: 0 0 1rem 0;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        padding: 1rem;
+        gap: 1rem;
+        height: $layout-page-mobile-height;
+
+        &__header {
+            flex-direction: column;
+            align-items: flex-start;
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            &__actions {
+                width: 100%;
+                justify-content: stretch;
+
+                .button {
+                    flex: 1;
+                }
+            }
+        }
+
+        &__content {
+            gap: 1rem;
+        }
+
+        &__section {
+            padding: 1rem;
+        }
+
+        &__footer {
+            flex-direction: column;
+
+            .button {
+                width: 100%;
+            }
+        }
+    }
+}
+
+/* Page Variants */
+.page {
+    /* Users specific */
+    &--users {
+        // Custom styles for users list page
+    }
+
+    &--user {
+        // Custom styles for user detail/edit page
+    }
+
+    /* Full width content */
+    &--full {
+        .page__content {
+            max-width: none;
+        }
+    }
+
+    /* Centered content */
+    &--centered {
+        .page__content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+    }
+
+    &--inventory-line {
+        padding: 0;
+        width: 90vw;
+    }
+}

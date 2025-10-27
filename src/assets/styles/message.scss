@@ -1,0 +1,263 @@
+/* Message Component Styles */
+@use './variables' as *;
+
+.message {
+    position: relative;
+    padding: $spacing-lg 1.25rem;
+    border-radius: $radius-lg;
+    border-left: 4px solid;
+    background-color: $color-gray-100;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    /* Message Content Container */
+    &__content {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    /* Message Icon */
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 0.75rem;
+        font-weight: bold;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Message Body */
+    &__body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    /* Message Title */
+    &__title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.5;
+    }
+
+    /* Message Text */
+    &__text {
+        margin: 0;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        opacity: 0.9;
+    }
+
+    /* Message Children */
+    &__children {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    /* Close Button */
+    &__close {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        opacity: 0.6;
+        transition:
+            opacity 0.2s ease,
+            transform 0.2s ease;
+        color: inherit;
+
+        &:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        &:focus {
+            outline: 2px solid currentColor;
+            outline-offset: 2px;
+            border-radius: 0.25rem;
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+
+    /* Info Type (Default) */
+    &--info {
+        border-left-color: #3b82f6;
+        background-color: #dbeafe;
+        color: #1e40af;
+
+        .message__icon {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #2563eb;
+        }
+    }
+
+    /* Success Type */
+    &--success {
+        border-left-color: #10b981;
+        background-color: #d1fae5;
+        color: #065f46;
+
+        .message__icon {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #059669;
+        }
+    }
+
+    /* Warning Type */
+    &--warning {
+        border-left-color: #f59e0b;
+        background-color: #fef3c7;
+        color: #92400e;
+
+        .message__icon {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #d97706;
+        }
+    }
+
+    /* Danger Type */
+    &--danger {
+        border-left-color: #ef4444;
+        background-color: #fee2e2;
+        color: #991b1b;
+
+        .message__icon {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+    }
+
+    /* Small Variant */
+    &--small {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+
+        .message__icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            font-size: 1rem;
+        }
+
+        .message__title {
+            font-size: 0.875rem;
+        }
+
+        .message__text {
+            font-size: 0.8125rem;
+        }
+    }
+
+    /* Large Variant */
+    &--large {
+        padding: 1.5rem 1.75rem;
+
+        .message__icon {
+            width: 2rem;
+            height: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .message__title {
+            font-size: 1.125rem;
+        }
+
+        .message__text {
+            font-size: 1rem;
+        }
+    }
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-1rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* Fade out animation class */
+.message--closing {
+    animation: fadeOut 0.2s ease forwards;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .message {
+        animation: none;
+    }
+
+    .message__close {
+        transition: none;
+    }
+
+    .message--closing {
+        animation: none;
+        opacity: 0;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .message {
+        border-left-width: 6px;
+        border: 2px solid;
+
+        &--info {
+            border-color: #1e40af;
+        }
+
+        &--success {
+            border-color: #065f46;
+        }
+
+        &--warning {
+            border-color: #92400e;
+        }
+
+        &--danger {
+            border-color: #991b1b;
+        }
+    }
+}
+
+/* Print Styles */
+@media print {
+    .message {
+        border: 1px solid;
+        box-shadow: none;
+
+        &__close {
+            display: none;
+        }
+    }
+}

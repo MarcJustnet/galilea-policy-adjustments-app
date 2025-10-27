@@ -1,0 +1,294 @@
+/* Tabs Component Styles */
+@use "./variables" as *;
+
+.tabs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    /* Tabs Header */
+    &__header {
+        display: flex;
+        gap: $spacing-xs;
+        padding: $spacing-md $spacing-lg;
+        background-color: $bg-lighter;
+        border-bottom: 2px solid $border-light;
+        overflow-x: auto;
+        overflow-y: hidden;
+        
+        /* Hide scrollbar but keep functionality */
+        scrollbar-width: thin;
+        scrollbar-color: $color-gray-300 transparent;
+
+        &::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: $color-gray-300;
+            border-radius: $radius-full;
+        }
+    }
+
+    /* Individual Tab Button */
+    &__tab {
+        position: relative;
+        flex-shrink: 0;
+        padding: $spacing-md $spacing-xl;
+        font-size: $font-base;
+        font-weight: $font-medium;
+        color: $text-muted;
+        background: none;
+        border: none;
+        border-radius: $radius-md $radius-md 0 0;
+        cursor: pointer;
+        transition: $transition-colors;
+        white-space: nowrap;
+        
+        /* Hover state */
+        &:hover:not(&--active) {
+            color: $text-secondary;
+            background-color: rgba($color-primary, 0.05);
+        }
+
+        /* Active state */
+        &--active {
+            color: $color-primary;
+            font-weight: $font-semibold;
+            background-color: $bg-white;
+            
+            /* Active indicator line */
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background-color: $color-primary;
+                border-radius: $radius-sm $radius-sm 0 0;
+            }
+        }
+
+        /* Focus state for accessibility */
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
+        }
+
+        /* Active (pressed) state */
+        &:active {
+            transform: translateY(1px);
+        }
+
+        /* Disabled state */
+        &:disabled {
+            color: $text-light;
+            cursor: not-allowed;
+            opacity: $opacity-disabled;
+
+            &:hover {
+                background-color: transparent;
+            }
+        }
+    }
+
+    /* Tabs Content */
+    &__content {
+        flex: 1;
+        padding: $spacing-2xl;
+        background-color: $bg-white;
+        border-radius: 0 0 $radius-lg $radius-lg;
+        min-height: 200px;
+
+        /* Animation for content switch */
+        animation: tabFadeIn 0.2s ease-in;
+    }
+}
+
+/* Tab content fade-in animation */
+@keyframes tabFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tabs variants */
+.tabs {
+    /* Compact tabs */
+    &--compact {
+        .tabs__tab {
+            padding: $spacing-sm $spacing-lg;
+            font-size: $font-sm;
+        }
+
+        .tabs__content {
+            padding: $spacing-xl;
+        }
+    }
+
+    /* Bordered tabs */
+    &--bordered {
+        border: 1px solid $border-light;
+        border-radius: $radius-lg;
+        overflow: hidden;
+
+        .tabs__header {
+            border-radius: $radius-lg $radius-lg 0 0;
+        }
+    }
+
+    /* Pills style tabs */
+    &--pills {
+        .tabs__header {
+            background-color: transparent;
+            border-bottom: none;
+            gap: $spacing-sm;
+        }
+
+        .tabs__tab {
+            border-radius: $radius-lg;
+            
+            &--active {
+                background-color: $color-primary;
+                color: $text-white;
+
+                &::after {
+                    display: none;
+                }
+            }
+
+            &:hover:not(&--active) {
+                background-color: $color-primary-bg;
+            }
+        }
+    }
+
+    /* Vertical tabs */
+    &--vertical {
+        flex-direction: row;
+
+        .tabs__header {
+            flex-direction: column;
+            width: 200px;
+            border-bottom: none;
+            border-right: 2px solid $border-light;
+            padding: $spacing-lg $spacing-md;
+        }
+
+        .tabs__tab {
+            text-align: left;
+            border-radius: $radius-md 0 0 $radius-md;
+
+            &--active::after {
+                top: 0;
+                bottom: 0;
+                left: auto;
+                right: -2px;
+                width: 2px;
+                height: auto;
+            }
+        }
+
+        .tabs__content {
+            flex: 1;
+            border-radius: 0 $radius-lg $radius-lg 0;
+        }
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: $breakpoint-md) {
+    .tabs {
+        &__header {
+            padding: $spacing-sm $spacing-md;
+        }
+
+        &__tab {
+            padding: $spacing-sm $spacing-lg;
+            font-size: $font-sm;
+        }
+
+        &__content {
+            padding: $spacing-xl;
+        }
+
+        /* Vertical tabs become horizontal on mobile */
+        &--vertical {
+            flex-direction: column;
+
+            .tabs__header {
+                width: 100%;
+                flex-direction: row;
+                border-right: none;
+                border-bottom: 2px solid $border-light;
+                overflow-x: auto;
+            }
+
+            .tabs__tab {
+                text-align: center;
+                border-radius: $radius-md $radius-md 0 0;
+
+                &--active::after {
+                    top: auto;
+                    bottom: -2px;
+                    left: 0;
+                    right: 0;
+                    width: auto;
+                    height: 2px;
+                }
+            }
+
+            .tabs__content {
+                border-radius: 0 0 $radius-lg $radius-lg;
+            }
+        }
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .tabs__content {
+        animation: none;
+    }
+
+    .tabs__tab:active {
+        transform: none;
+    }
+}
+
+/* Dark theme support (optional) */
+@media (prefers-color-scheme: dark) {
+    .tabs {
+        &__header {
+            background-color: $color-dark-bg-light;
+            border-bottom-color: $color-dark-border;
+        }
+
+        &__tab {
+            color: $color-dark-text-muted;
+
+            &:hover:not(&--active) {
+                color: $color-dark-text-secondary;
+            }
+
+            &--active {
+                color: $color-primary-light;
+                background-color: $color-dark-bg;
+            }
+        }
+
+        &__content {
+            background-color: $color-dark-bg;
+        }
+    }
+}
