@@ -1,16 +1,16 @@
-import { BaseModel, KeyOfType, OnChangeEvent } from "@/core/types"
+import { KeyOfType, OnChangeEvent } from "@/core/types"
 import Input from "@/core/ui-components/Input"
 import { useClickOutside } from "@/core/ui-hooks"
 import { CrudStore } from "@/core/ui-store"
 import { Icons } from "@justnetsystems/ui-icons"
 import { useEffect, useMemo, useRef, useState } from "react"
 
-interface ColumnHeaderOptionsProps<T extends BaseModel> {
+interface ColumnHeaderOptionsProps<T> {
     field: KeyOfType<T>
     useTableStore: CrudStore.Types.Table<T>
 }
 
-export const ColumnHeaderOptions = <T extends BaseModel>({ field, useTableStore }: ColumnHeaderOptionsProps<T>) => {
+export const ColumnHeaderOptions = <T,>({ field, useTableStore }: ColumnHeaderOptionsProps<T>) => {
     const [isOpen, setIsOpen] = useState(false)
     const [filterValue, setFilterValue] = useState('')
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })

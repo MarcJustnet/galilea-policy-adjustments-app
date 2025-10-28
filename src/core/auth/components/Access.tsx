@@ -17,7 +17,6 @@ interface AccessProps {
 export const Access: React.FC<AccessProps> = ({ children, permission, loader = null, useCondition = () => true, navigate = true, to = '/404', or }) => {
     const me = useAuthStore(state => state.data)
     const data = useMemo(() => checkUserPermission(permission, me), [me, permission])
-    console.log('Access check:', { permission, hasAccess: data })
     const condition = useCondition()
 
     if (data && condition) return <Suspense fallback={loader}>{children}</Suspense>

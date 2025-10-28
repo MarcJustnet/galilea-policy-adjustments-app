@@ -1,5 +1,4 @@
-export type PolicyFields = {
-    id: number // Alias para NUMERO (primary key)
+export interface Policy {
     NUMERO: number
     CLIENTE: number
     POLIZA_CIA: string
@@ -21,7 +20,7 @@ export type PolicyFields = {
     COMISION: number
     FRANQUICIA: number
     PACTADA_COMIS: number
-    PACTADA_MOTIVO: ArrayBuffer | null
+    PACTADA_MOTIVO: Buffer | null
     PACTADA_COMISION: number
     CONDICIONADO: string | null
     REEMPLAZA_A: number | null
@@ -39,8 +38,8 @@ export type PolicyFields = {
     ESPECIFICACION: string
     AVISO_FLOTANTE: Date | null
     AVISO_REGUL: Date | null
-    OBSERVACIONES: ArrayBuffer | null
-    HISTORIAL: ArrayBuffer | null
+    OBSERVACIONES: Buffer | null
+    HISTORIAL: Buffer | null
     TIPO: string
     ESTADO: number
     FECHA_ESTADO: Date | null
@@ -66,4 +65,11 @@ export type PolicyFields = {
     PACTADA_CESION: number
     DEVENGO_COLABORADOR: Date | null
     AUTORIZAR_FORMAPAGO: number
+    // Joined fields from related tables
+    CLIENT_NAME?: string | null
+    CLIENT_NIF?: string
+    CLIENT_EMAIL?: string | null
+    DECLARATION_TYPE_DESCRIPTION?: string | null
+    COMPANY_NAME?: string | null
+    BRANCH_DESCRIPTION?: string | null
 }

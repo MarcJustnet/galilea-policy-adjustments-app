@@ -1,14 +1,13 @@
-import { BaseModel } from '@/core/types'
 import { CrudStore } from '@/core/ui-store'
 import { useEffect, useRef } from 'react'
 
-interface SelectWithSearchInputProps<T extends BaseModel> {
+interface SelectWithSearchInputProps<T> {
     autoFocus: boolean | undefined
     showOptions: boolean
     useSelectorStore: CrudStore.Types.List<T>
 }
 
-export function SelectWithSearchInput<T extends BaseModel>({
+export function SelectWithSearchInput<T>({
     autoFocus,
     showOptions,
     useSelectorStore

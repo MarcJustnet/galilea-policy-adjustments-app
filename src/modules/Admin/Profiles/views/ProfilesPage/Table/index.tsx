@@ -3,6 +3,7 @@ import Loader from "@/components/layouts/Loader"
 import RowActionsMenu from "@/components/RowActionsMenu"
 import TablePagination from "@/components/TablePagination"
 import type { Profile } from "@/core/types/models"
+import Input from "@/core/ui-components/Input"
 import Message from "@/core/ui-components/Message"
 import Modal from "@/core/ui-components/Modal"
 import { Icons } from "@justnetsystems/ui-icons"
@@ -39,12 +40,12 @@ const TableControls: React.FC = () => {
 
     return (
         <div className="table__controls">
-            <input
+            <Input
                 type="text"
-                className="form__input"
                 placeholder="Filtro general..."
                 value={filter}
                 onChange={onChangeFilter}
+                debounce={300}
             />
             <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto' }}>
                 {hasActiveFilters && (

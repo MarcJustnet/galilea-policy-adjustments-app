@@ -2,13 +2,13 @@ import { useRef, useId, useEffect, useState } from 'react'
 
 import type { HandleChangeType, Option, SelectWithSearchProps } from './types'
 
-import type { BaseModel } from '@/core/types'
+import type { KeyOfType } from '@/core/types'
 import { useClickOutside } from '@/core/ui-hooks'
 import type { CrudStore } from '@/core/ui-store'
 
-type UseSelectWithSearchProps<T extends BaseModel, V> = Pick<SelectWithSearchProps<T, V>, 'nullableValue' | 'useSelectorStore' | 'onChange' | 'name' | 'name_string' | 'name_obj' | 'value' | 'valueTitle' | 'valueObj' | 'filters' | 'readOnly' | 'disabled' | 'just_value' | 'noResultOption'>
+type UseSelectWithSearchProps<T extends Record<K, number>, K extends KeyOfType<T, number>, V> = Pick<SelectWithSearchProps<T, K, V>, 'nullableValue' | 'useSelectorStore' | 'onChange' | 'name' | 'name_string' | 'name_obj' | 'value' | 'valueTitle' | 'valueObj' | 'filters' | 'readOnly' | 'disabled' | 'just_value' | 'noResultOption'>
 
-export function useSelectWithSearch<T extends BaseModel, V>({
+export function useSelectWithSearch<T extends Record<K, number>, K extends KeyOfType<T, number>, V>({
     useSelectorStore,
     onChange,
     name,
@@ -23,7 +23,7 @@ export function useSelectWithSearch<T extends BaseModel, V>({
     nullableValue = false,
     just_value = false,
     noResultOption = { name: 'Sin resultados', value: null, obj: null }
-}: UseSelectWithSearchProps<T, V>) {
+}: UseSelectWithSearchProps<T, K, V>) {
     // Refs
     const selectRef = useRef<HTMLDivElement>(null)
     const id = useId()
@@ -93,7 +93,7 @@ export function useSelectWithSearch<T extends BaseModel, V>({
     }
 }
 
-function useFilters<T extends BaseModel>(useSelectorStore: CrudStore.Types.List<T>, filters: Partial<T>) {
+function useFilters<T>(useSelectorStore: CrudStore.Types.List<T>, filters: Partial<T>) {
     const setFilters = useSelectorStore((state) => state.setFilters)
     const storeFilters = useSelectorStore((state) => state.filters)
 

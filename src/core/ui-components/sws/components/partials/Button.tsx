@@ -1,7 +1,6 @@
-import { BaseModel } from '@/core/types'
 import { type Option } from '../../types'
 
-interface SelectWithSearchButtonProps<T extends BaseModel, V> {
+interface SelectWithSearchButtonProps<T, V> {
     noSelectedTitle?: string
     id: string
     disabled?: boolean
@@ -14,7 +13,7 @@ interface SelectWithSearchButtonProps<T extends BaseModel, V> {
     customClassName?: string
 }
 
-export function SelectWithSearchButton<T extends BaseModel, V>({
+export function SelectWithSearchButton<T, V>({
     noSelectedTitle = 'Selecciona una opción',
     id,
     disabled = false,

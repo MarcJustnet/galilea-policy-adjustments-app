@@ -10,7 +10,6 @@ import { UsersStore } from "../../../store"
 const Form: React.FC = () => {
     const newData = UsersStore.FormSimple(state => state.newData)
     const onChange = UsersStore.FormSimple(state => state.onChange)
-    const error = UsersStore.FormSimple(state => state.error)
 
     if (!newData) return null
 
@@ -46,9 +45,7 @@ const SaveButton: React.FC = () => {
     const navigate = useNavigate()
 
     const data = UsersStore.FormSimple(state => state.data)
-    const setData = UsersStore.FormSimple(state => state.setData)
     const newData = UsersStore.FormSimple(state => state.newData)
-    const setNewData = UsersStore.FormSimple(state => state.setNewData)
     const isEdited = UsersStore.FormSimple(state => state.isEdited)
     const setIsEdited = UsersStore.FormSimple(state => state.setIsEdited)
     const isValid = UsersStore.FormSimple(state => state.isValid)

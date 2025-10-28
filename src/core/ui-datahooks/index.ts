@@ -3,12 +3,14 @@ import { type MutateOptions, useInfiniteQuery, useMutation, useQuery } from '@ta
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router'
 
+import type { KeyOfType } from '@/core/types'
 import { useParamId, useURL } from '@/core/ui-hooks'
 import type { AxiosResponse, BaseCrudServiceType, CrudAPI } from '@/core/ui-service'
 import type { BaseCrudStore, CrudStore } from '@/core/ui-store'
 
-interface BaseCrudHooksOptions<T extends { id: number }> {
+interface BaseCrudHooksOptions<T extends Record<K, number>, K extends KeyOfType<T, number> = KeyOfType<T, number>> {
     key: string
+    idKey?: K
     Table?: {
         refetchOnWindowFocus?: boolean
         refetchInterval?: number | false
@@ -49,15 +51,15 @@ interface BaseCrudHooksOptions<T extends { id: number }> {
     }
 }
 
-interface MutateProps<T extends { id: number }> {
+interface MutateProps<T> {
     newData: Partial<T> | T
     isNew: boolean
 }
 
-export const BaseCrudHooks = <T extends { id: number }>(
+export const BaseCrudHooks = <T extends Record<K, number>, K extends KeyOfType<T, number> = KeyOfType<T, number>>(
     Service: BaseCrudServiceType<T>,
-    CrudStore: ReturnType<typeof BaseCrudStore<T>>,
-    Options: BaseCrudHooksOptions<T>,
+    CrudStore: ReturnType<typeof BaseCrudStore<T, K>>,
+    Options: BaseCrudHooksOptions<T, K>,
 ) => {
 
     const useTableHook = () => {
@@ -337,6 +339,8 @@ export const BaseCrudHooks = <T extends { id: number }>(
             left: Options.Mutate?.left ?? 0
         })
 
+        const idKey = (Options.idKey ?? 'id') as K
+
         const { isPending, mutate } = useMutation<T, Error, MutateProps<T>>({
             mutationFn: async ({ newData, isNew = false }: MutateProps<T>) => {
                 // setIsNew(isNew)
@@ -346,7 +350,7 @@ export const BaseCrudHooks = <T extends { id: number }>(
                     return result.data.data
                 } else {
                     const updateFn = Options.Mutate?.updateFn ?? Service.Update
-                    const id = (newData as T).id
+                    const id = (newData as T)[idKey] as number
                     const result = await updateFn(id, newData)
                     return result.data.data
                 }
@@ -374,7 +378,7 @@ export const BaseCrudHooks = <T extends { id: number }>(
             setData(res)
             setNewData(res)
             toast(`${Options.Mutate?.name ?? 'Registro'} creado correctamente`, { type: 'success' })
-            if (Options.Mutate?.navigateOnSuccess ?? true) navigate(getURL(res.id))
+            if (Options.Mutate?.navigateOnSuccess ?? true) navigate(getURL(res[idKey] as number))
         }
 
         const onSuccessUpdate = (res: T) => {
@@ -434,15 +438,15 @@ export const BaseCrudHooks = <T extends { id: number }>(
 }
 
 // Hook utility para manejar infinite scroll con refs
-export type ListHookType<T extends { id: number }> = ReturnType<ReturnType<typeof BaseCrudHooks<T>>['useList']>
+export type ListHookType<T extends Record<K, number>, K extends KeyOfType<T, number> = KeyOfType<T, number>> = ReturnType<ReturnType<typeof BaseCrudHooks<T, K>>['useList']>
 
-interface useListOnScrollRefProps<T extends { id: number }> {
-    useListHook: (limit?: number | '*') => ListHookType<T>
+interface useListOnScrollRefProps<T extends Record<K, number>, K extends KeyOfType<T, number> = KeyOfType<T, number>> {
+    useListHook: (limit?: number | '*') => ListHookType<T, K>
     limit?: number | '*'
     heightOffset?: number
 }
 
-export function useListOnScrollRef<T extends { id: number }>({
+export function useListOnScrollRef<T extends Record<K, number>, K extends KeyOfType<T, number> = KeyOfType<T, number>>({
     useListHook,
     limit = 10,
     heightOffset = 175

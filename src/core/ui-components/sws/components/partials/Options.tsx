@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
 
-import { Any, BaseModel } from '@/core/types'
+import { Any, KeyOfType } from '@/core/types'
 import { ListHookType, useListOnScrollRef } from '@/core/ui-datahooks'
 import { CrudStore } from '@/core/ui-store'
 import type { HandleChangeType, Option } from '../../types'
 
-export interface SelectWithSearchOptionsListProps<T extends BaseModel, V> {
+export interface SelectWithSearchOptionsListProps<T extends Record<K, number>, K extends KeyOfType<T, number>, V> {
     className?: string
     style?: React.CSSProperties
     nullable?: boolean
@@ -16,13 +16,13 @@ export interface SelectWithSearchOptionsListProps<T extends BaseModel, V> {
     valueField?: keyof T
     setOptions: (options: Array<Option<T>>) => void
     handleChange: HandleChangeType<T>
-    useInfinity: (limit?: number | '*') => ListHookType<T>
+    useInfinity: (limit?: number | '*') => ListHookType<T, K>
     children?: React.ReactNode
     ItemNode?: React.FC<{ name: string, value: V }>
     extraOptions?: Array<Option<T>>
 }
 
-export function SelectWithSearchOptionsList<T extends BaseModel, V>({
+export function SelectWithSearchOptionsList<T extends Record<K, number>, K extends KeyOfType<T, number>, V>({
     className = '',
     style = {},
     noSelectedOption = 'Selecciona una opción',
@@ -36,7 +36,7 @@ export function SelectWithSearchOptionsList<T extends BaseModel, V>({
     useInfinity,
     children,
     ItemNode
-}: SelectWithSearchOptionsListProps<T, V>) {
+}: SelectWithSearchOptionsListProps<T, K, V>) {
     const { dropdownRef, data } = useListOnScrollRef<T>({ useListHook: useInfinity })
 
     useEffect(() => {
@@ -60,7 +60,7 @@ export function SelectWithSearchOptionsList<T extends BaseModel, V>({
         >
             {children}
             {options.map((option, i) => (
-                <SelectWithSearchOption<T, V>
+                <SelectWithSearchOption<T, K, V>
                     key={i}
                     option={option}
                     handleChange={handleChange}
@@ -71,7 +71,7 @@ export function SelectWithSearchOptionsList<T extends BaseModel, V>({
     )
 }
 
-export interface SelectWithSearchFixedOptionsListProps<T extends BaseModel, V> {
+export interface SelectWithSearchFixedOptionsListProps<T extends Record<K, number>, K extends KeyOfType<T, number>, V> {
     className?: string
     style?: React.CSSProperties
     noSelectedOption?: string
@@ -86,7 +86,7 @@ export interface SelectWithSearchFixedOptionsListProps<T extends BaseModel, V> {
     ItemNode?: React.FC<{ name: string, value: V }>
 }
 
-export function SelectWithSearchFixedOptionsList<T extends BaseModel, V>({
+export function SelectWithSearchFixedOptionsList<T extends Record<K, number>, K extends KeyOfType<T, number>, V>({
     className = '',
     style = {},
     noSelectedOption = 'Selecciona una opción',
@@ -99,7 +99,7 @@ export function SelectWithSearchFixedOptionsList<T extends BaseModel, V>({
     nullable = false,
     useSelectorStore,
     ItemNode
-}: SelectWithSearchFixedOptionsListProps<T, V>) {
+}: SelectWithSearchFixedOptionsListProps<T, K, V>) {
     const filter = useSelectorStore((state) => state.filter)
 
     useEffect(() => {
@@ -114,7 +114,7 @@ export function SelectWithSearchFixedOptionsList<T extends BaseModel, V>({
         <ul style={style} className={optionsClass}>
             {children}
             {options.map((option, i) => (
-                <SelectWithSearchOption<T, V>
+                <SelectWithSearchOption<T, K, V>
                     key={i}
                     option={option}
                     handleChange={handleChange}
@@ -125,17 +125,17 @@ export function SelectWithSearchFixedOptionsList<T extends BaseModel, V>({
     )
 }
 
-interface SelectWithSearchOptionProps<T extends BaseModel, V> {
+interface SelectWithSearchOptionProps<T extends Record<K, number>, K extends KeyOfType<T, number>, V> {
     option: Option<T>
     handleChange: HandleChangeType<T>
     ItemNode?: React.FC<{ name: string, value: V, obj?: T | null }>
 }
 
-export function SelectWithSearchOption<T extends BaseModel, V>({
+export function SelectWithSearchOption<T extends Record<K, number>, K extends KeyOfType<T, number>, V>({
     option: { name, value, obj, onClick },
     handleChange,
     ItemNode
-}: SelectWithSearchOptionProps<T, V>) {
+}: SelectWithSearchOptionProps<T, K, V>) {
     const handleClick = (e: React.MouseEvent) => {
         onClick?.(e)
         handleChange(value, name, obj)

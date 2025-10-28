@@ -6,9 +6,9 @@ import { BaseCrudHooks } from "@/core/ui-datahooks"
 
 export class PoliciesToAdjustHooks extends BaseCrudHooks<PolicyFields>(PoliciesToAdjustService, PoliciesToAdjustStore, {
     key: 'Policy',
+    idKey: 'NUMERO',
     GetByIdSimple: {
         baseData: {
-            id: 0,
             NUMERO: 0,
             CLIENTE: 0,
             POLIZA_CIA: '',

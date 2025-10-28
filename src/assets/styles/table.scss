@@ -377,9 +377,14 @@
     &--policies {
         .table__row {
             grid-template-columns: 100px // Número
-                200px // Póliza
-                100px // Cliente
-                minmax(200px, 1fr) // Riesgo - flexible
+                150px // Póliza
+                200px // Cliente
+                120px // NIF
+                150px // Compañía
+                180px // Ramo
+                150px // Tipo Declaración
+                400px // Riesgo - fixed size
+                110px // Aviso Regul.
                 120px // Prima Total
                 48px; // Actions
         }

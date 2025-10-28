@@ -1,11 +1,11 @@
-import type { BaseModel, OnChangeEvent } from '@/core/types'
+import type { OnChangeEvent } from '@/core/types'
 import type { CrudStore } from '@/core/ui-store'
 
 export type SelectWithSearchValue = string | number | boolean | null | undefined
 
 export type HandleChangeType<T> = (value: SelectWithSearchValue, value_string: string, obj: T | null | undefined) => void
 
-export interface SelectWithSearchProps<T extends BaseModel, V> {
+export interface SelectWithSearchProps<T extends Record<K, number>, K extends KeyOfType<T, number>, V> {
     disabled?: boolean
     readOnly?: boolean
     nullableValue?: boolean

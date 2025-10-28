@@ -1,14 +1,14 @@
 import { useEffect } from "react"
 
 namespace Modal {
-    export interface Props {
+    export interface Props extends React.HTMLAttributes<HTMLDivElement> {
         isOpen: boolean
         handleClose: () => void
         children: React.ReactNode
     }
 }
 
-const Modal: React.FC<Modal.Props> = ({ isOpen, handleClose, children }) => {
+const Modal: React.FC<Modal.Props> = ({ isOpen, handleClose, children, className = '', ...rest }) => {
     useEffect(() => {
         if (isOpen) {
             const originalOverflow = document.body.style.overflow
@@ -18,7 +18,7 @@ const Modal: React.FC<Modal.Props> = ({ isOpen, handleClose, children }) => {
     }, [isOpen])
 
     return (
-        <div className={`modal ${isOpen ? 'modal--open' : ''}`}>
+        <div className={`modal ${isOpen ? 'modal--open' : ''} ${className}`} {...rest}>
             <div className='modal__backdrop' onClick={handleClose} />
             <div className='modal__content'>
                 {children}

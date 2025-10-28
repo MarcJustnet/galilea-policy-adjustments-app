@@ -1,13 +1,13 @@
-import { BaseModel } from '@/core/types'
+import { KeyOfType } from '@/core/types'
 import { useId } from 'react'
 import { useSelectWithSearch } from '../hooks'
 import type { SelectWithSearchProps, SelectWithSearchValue } from '../types'
 
 import { SelectWithSearchButton, SelectWithSearchInput, SelectWithSearchOptionsList } from './partials'
 
-export function SelectWithSearch<T extends BaseModel, V = SelectWithSearchValue>(p: SelectWithSearchProps<T, V>) {
+export function SelectWithSearch<T extends Record<K, number>, K extends KeyOfType<T, number>, V = SelectWithSearchValue>(p: SelectWithSearchProps<T, K, V>) {
     const id = useId()
-    const { selectRef, handleClick, selectedValue, showOptions, toUseOptions, setOptions, handleChange } = useSelectWithSearch<T, V>(p)
+    const { selectRef, handleClick, selectedValue, showOptions, toUseOptions, setOptions, handleChange } = useSelectWithSearch<T, K, V>(p)
 
     const renderAddons = () => {
         const leftAddons = p.leftAddons ?? []
@@ -29,7 +29,7 @@ export function SelectWithSearch<T extends BaseModel, V = SelectWithSearchValue>
                         ValueNode={p.ValueNode}
                         showOptions={showOptions}
                     />
-                    <SelectWithSearchOptionsList<T, V>
+                    <SelectWithSearchOptionsList<T, K, V>
                         nullable={p.nullable}
                         noSelectedOption={p.noSelectedOption}
                         showOptions={showOptions}
@@ -81,7 +81,7 @@ export function SelectWithSearch<T extends BaseModel, V = SelectWithSearchValue>
                         showOptions={showOptions}
                         customClassName={buttonClass}
                     />
-                    <SelectWithSearchOptionsList<T, V>
+                    <SelectWithSearchOptionsList<T, K, V>
                         nullable={p.nullable}
                         noSelectedOption={p.noSelectedOption}
                         showOptions={showOptions}

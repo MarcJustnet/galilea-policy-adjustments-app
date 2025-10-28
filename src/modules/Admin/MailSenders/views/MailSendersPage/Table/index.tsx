@@ -1,6 +1,7 @@
 import Loader from "@/components/layouts/Loader"
 import RowActionsMenu from "@/components/RowActionsMenu"
 import TablePagination from "@/components/TablePagination"
+import Input from "@/core/ui-components/Input"
 import Message from "@/core/ui-components/Message"
 import { Icons } from "@justnetsystems/ui-icons"
 import { useRef } from "react"
@@ -31,12 +32,12 @@ const TableControls: React.FC = () => {
 
     return (
         <div className="table__controls">
-            <input
+            <Input
                 type="text"
-                className="form__input"
                 placeholder="Filtro general..."
                 value={filter}
                 onChange={onChangeFilter}
+                debounce={300}
             />
             <button
                 className="button button--primary"

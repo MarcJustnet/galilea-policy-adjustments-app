@@ -1,12 +1,12 @@
 import { updateSubobject } from '@justnetsystems/utils'
 
-import type { Orders, OnChangeEvent, Any } from '../types'
+import type { Orders, OnChangeEvent, Any, KeyOfType } from '../types'
 
 import type { BaseStore, CrudStore, SetType, StoreError } from './types'
 
-type Rules<T extends { id: number }> = Array<CrudStore.KeyRules<T>>
+type Rules<T> = Array<CrudStore.KeyRules<T>>
 
-export const BaseStoreInitializers = <T extends { id: number }, E extends StoreError>() => {
+export const BaseStoreInitializers = <T extends Record<K, number>, K extends KeyOfType<T, number>, E extends StoreError>(idKey: K) => {
     class StoreInitializers {
         static Base<T, M extends BaseStore<T, E> = BaseStore<T, E>>(set: SetType<M>, get: () => M): BaseStore<T, E> {
             return {
@@ -138,7 +138,7 @@ export const BaseStoreInitializers = <T extends { id: number }, E extends StoreE
                         return { order: [[order, 'ASC']] as Orders<T>, isSorted: true, page }
                     })
                 },
-                clearFilters: () => { set(prev => ({ filters: {}, isFiltered: false, filteredIds: prev.newData?.map(({ id }) => id) ?? [] })) },
+                clearFilters: () => { set(prev => ({ filters: {}, isFiltered: false, filteredIds: prev.newData?.map(({ [idKey]: id }) => id as number) ?? [] })) },
                 getValidationError: (i) => (key) => {
                     const validation = get().validations[i]?.find((validation) => validation.key === key)
                     return validation?.error ?? ''
@@ -150,7 +150,7 @@ export const BaseStoreInitializers = <T extends { id: number }, E extends StoreE
                             data: d,
                             newData: d,
                             validations: [],
-                            filteredIds: d?.map(({ id }) => id),
+                            filteredIds: d?.map(({ [idKey]: id }) => id as number),
                         }
                     })
                 },
@@ -264,21 +264,21 @@ export const BaseStoreInitializers = <T extends { id: number }, E extends StoreE
             return target.type === 'checkbox' ? target.checked : target.value
         }
 
-        static localFilter<T extends { id: number }>(data: T[] | null, newFilters: Partial<T>): { filteredIds: number[], isFiltered: boolean, filters: Partial<T> } {
+        static localFilter<T>(data: T[] | null, newFilters: Partial<T>): { filteredIds: number[], isFiltered: boolean, filters: Partial<T> } {
             const filters = Object.fromEntries(Object.entries(newFilters).filter(([, v]) => v !== '')) as Partial<T>
             const isFiltered = Object.values(filters).some((filter) => filter !== '')
             let filteredIds: number[] = []
             if (data) {
-                if (!isFiltered) filteredIds = data.map(({ id }) => id)
+                if (!isFiltered) filteredIds = data.map(({ [idKey]: id }) => id as number)
                 else {
                     filteredIds = data.filter((item) => {
                         return Object.entries(filters).every(([key, value]) => {
                             const field = item[key as keyof T]
-                            if (typeof field === 'string') return field.toLowerCase().includes(value.toLowerCase())
+                            if (typeof field === 'string' && typeof value === 'string') return field.toLowerCase().includes(value.toLowerCase())
                             if (typeof field === 'number') return field.toString().includes(Number(value).toString())
                             return field === value
                         })
-                    }).map(({ id }) => id)
+                    }).map(({ [idKey]: id }) => id as number)
                 }
             }
 

@@ -35,7 +35,7 @@ const RolePage: React.FC = () => {
     )
 
     return (
-        <Modal isOpen={true} handleClose={handleClose}>
+        <Modal isOpen={true} handleClose={handleClose} className="modal--role">
             <div className="tabs">
                 <div className="tabs__header">
                     <button

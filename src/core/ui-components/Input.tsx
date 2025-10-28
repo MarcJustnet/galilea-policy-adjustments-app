@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useEffect, useId, useState } from "react"
 import { OnChangeEvent } from "../types"
 
 namespace Input {
@@ -9,12 +9,13 @@ namespace Input {
     }
 
     export interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
-        label: string
+        label?: string
         error?: string
         onChange?: (e: OnChangeEvent) => void
         addons?: Addon[]
         ref?: React.RefObject<HTMLInputElement | null>
         addonPosition?: 'external' | 'internal' // external = junto al input, internal = dentro del input
+        debounce?: number // Tiempo en ms para debounce del onChange
     }
 }
 
@@ -25,9 +26,48 @@ const Input: React.FC<Input.Props> = ({
     addonPosition = 'external',
     className = '',
     id: _,
+    debounce,
+    onChange,
+    value,
     ...rest
 }) => {
     const id = useId()
+    const [internalValue, setInternalValue] = useState<string>((value ?? '') as string)
+
+    // Sincronizar el valor interno cuando cambia el prop value
+    useEffect(() => {
+        setInternalValue((value ?? '') as string)
+    }, [value])
+
+    // Efecto de debounce
+    useEffect(() => {
+        if (!debounce || !onChange) return
+
+        const timeout = setTimeout(() => {
+            onChange({
+                target: {
+                    value: internalValue,
+                    name: rest.name as string,
+                    type: rest.type as string
+                }
+            })
+        }, debounce)
+
+        return () => { clearTimeout(timeout) }
+    }, [internalValue, debounce, onChange, rest.name, rest.type])
+
+    // Manejar cambios en el input
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value
+
+        if (debounce) {
+            // Con debounce: actualizar valor interno
+            setInternalValue(newValue)
+        } else if (onChange) {
+            // Sin debounce: llamar onChange directamente
+            onChange(e)
+        }
+    }
 
     const leftAddons = addons.filter(addon => addon.position === 'left')
     const rightAddons = addons.filter(addon => addon.position !== 'left')
@@ -53,6 +93,8 @@ const Input: React.FC<Input.Props> = ({
             className={`${inputClass} ${className}`}
             id={id}
             {...rest}
+            value={debounce ? internalValue : value}
+            onChange={handleChange}
         />
     )
 
@@ -103,7 +145,7 @@ const Input: React.FC<Input.Props> = ({
 
     return (
         <div className='form__group'>
-            <label className='form__label' htmlFor={id}>{label}</label>
+            {label && <label className='form__label' htmlFor={id}>{label}</label>}
             {renderInput()}
             {error && <p className='form__error'>{error}</p>}
         </div>

@@ -24,7 +24,7 @@ const LoginPage: React.FC = () => {
         <div className='auth-page'>
             <div className='auth-card'>
                 <div className='auth-card__header'>
-                    <h1>Inventario Texia</h1>
+                    <h1>Regularizaciones Galilea</h1>
                 </div>
 
                 <UserPasswordLoginButton />
