@@ -3,96 +3,78 @@
 
 .app-layout {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     height: 100dvh;
     width: 100vw;
     overflow: hidden;
-}
 
-.app-header {
-    background: $bg-white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid $color-slate-200;
-    padding: 0.75rem 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-}
+    // Sidebar is first in the layout (left side, full height)
+    // Content area is second (right side, with header on top and main below)
 
-.app-content {
-    display: flex;
-    width: 100%;
-    height: calc(100dvh - $layout-header-height);
-    overflow: hidden;
-}
+    .app-content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        overflow: hidden;
+        width: $layout-page-desktop-width;
 
-.version {
-    position: fixed;
-    bottom: 60px;
-    left: 6px;
-    z-index: 1000;
-}
+        .app-header {
+            background: $bg-white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid $color-gray-300;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            flex-shrink: 0;
+            height: $layout-header-height;
 
-.app-main {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
-    width: $layout-page-desktop-width;
-}
+            &__title {
+                margin: 0;
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: $color-slate-800;
+            }
+        }
 
-.app-header__branding {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.app-header__logo {
-    width: 2.5rem;
-    height: 2.5rem;
-    background: $color-primary;
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    svg {
-        width: 1.5rem;
-        height: 1.5rem;
-        color: $text-white;
+        .app-main {
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex: 1;
+            height: calc(100dvh - $layout-header-height);
+        }
     }
-}
 
-.app-header__title {
-    margin: 0;
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: $color-slate-800;
-}
-
-.app-header__subtitle {
-    margin: 0;
-    font-size: 0.875rem;
-    color: $color-slate-500;
+    .app-version {
+        position: fixed;
+        bottom: 60px;
+        left: 6px;
+        z-index: 1000;
+    }
 }
 
 /* Responsive Design */
 @media (max-width: $breakpoint-md) {
-    .app-main {
-        width: $layout-page-mobile-width;
-    }
+    .app-layout {
+        flex-direction: column;
 
-    .app-header__title {
-        font-size: 1rem;
-    }
+        .app-header__title {
+            font-size: 1rem;
+        }
 
-    .app-header__subtitle {
-        font-size: 0.75rem;
-    }
+        .app-content {
+            width: $layout-page-mobile-width;
+    
+            .app-main {
+                height: calc(100dvh - $layout-header-height - $layout-sidebar-mobile-height);
+            }
+        }
 
-    .version {
-        bottom: 4px;
-        left: 4px;
+        .app-version {
+            bottom: 4px;
+            left: 4px;
+        }
     }
 }

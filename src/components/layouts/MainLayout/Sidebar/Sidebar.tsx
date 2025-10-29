@@ -34,8 +34,15 @@ export const Sidebar: React.FC = () => {
 
     return (
         <aside className='sidebar'>
-            <nav>
-                <ul>
+            <div className="sidebar__branding">
+                <div className="sidebar__branding__logo">
+                    <img src="/logo-black.webp" alt="Regularizaciones" />
+                </div>
+                <h1 className="sidebar__branding__title">Regularizaciones</h1>
+            </div>
+
+            <nav className="sidebar__nav">
+                <ul className="sidebar__nav__list">
                     <SidebarItem item={{
                         to: 'policies/to_adjust',
                         icon: <Icons.LinesLeaning />,
@@ -50,8 +57,8 @@ export const Sidebar: React.FC = () => {
                     )}
                 </ul>
             </nav>
-            <div>
-                <button className='sidebar__logout' onClick={logout} title='Cerrar sesión'>
+            <div className="sidebar__bottom">
+                <button className='sidebar__bottom__logout' onClick={logout} title='Cerrar sesión'>
                     <Icons.RightFromBracket />
                     <span>Logout</span>
                 </button>

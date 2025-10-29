@@ -24,7 +24,10 @@ const LoginPage: React.FC = () => {
         <div className='auth-page'>
             <div className='auth-card'>
                 <div className='auth-card__header'>
-                    <h1>Regularizaciones Galilea</h1>
+                    <div className='auth-card__logo'>
+                        <img src="/logo-black.webp" alt="Regularizaciones" />
+                    </div>
+                    <h1>Regularizaciones</h1>
                 </div>
 
                 <UserPasswordLoginButton />

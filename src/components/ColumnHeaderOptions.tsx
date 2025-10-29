@@ -71,12 +71,12 @@ export const ColumnHeaderOptions = <T,>({ field, useTableStore }: ColumnHeaderOp
     }
 
     return (
-        <div className="table__actions-menu" style={{ marginLeft: 'auto' }} ref={menuRef}>
+        <div className="table__actions-menu table__actions-menu--header" ref={menuRef}>
             <button
                 ref={buttonRef}
-                className={`button button--icon button--small ${isActive ? 'button--primary' : ''}`}
+                className={`button button--icon button--small ${isActive ? 'button--primary' : isOpen ? '' : 'button--ghost'}`}
                 onClick={handleToggle}
-                style={{ padding: '0.25rem' }}
+                aria-label="Opciones de columna"
             >
                 <Icons.EllipsisVertical />
             </button>
@@ -84,10 +84,8 @@ export const ColumnHeaderOptions = <T,>({ field, useTableStore }: ColumnHeaderOp
                 <div
                     className="table__actions-dropdown table__actions-dropdown--fixed"
                     style={{
-                        position: 'fixed',
                         top: `${dropdownPosition.top}px`,
-                        left: `${dropdownPosition.left}px`,
-                        zIndex: 20
+                        left: `${dropdownPosition.left}px`
                     }}
                 >
                     <div style={{ padding: '0.5rem', borderBottom: '1px solid #e5e7eb' }}>

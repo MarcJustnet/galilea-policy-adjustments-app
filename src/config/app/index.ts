@@ -2,12 +2,12 @@ import { defineAppConfig } from '@/core/config/iam'
 
 export const appConfig = defineAppConfig({
     code: 'PolicyAdjustments',
-    name: 'Regularizaciones Galilea',
+    name: 'Regularizaciones',
     description: 'Gestión y distribución de regularizaciones',
     url: import.meta.env.VITE_APP_URL,
     isPublished: true,
     permissions: [
-        { code: 'HasAccess', name: 'Access the app', errorCode: 310000 }
+        { code: 'HasAccess', name: 'Acceso a la aplicación', errorCode: 310000 }
     ],
     features: {
         Policies: {
@@ -16,7 +16,7 @@ export const appConfig = defineAppConfig({
             description: 'Manage policies',
             show: true,
             permissions: [
-                { code: 'HasAccess', name: 'Access policies', errorCode: 311000 },
+                { code: 'HasAccess', name: 'Acceso a pólizas', errorCode: 311000 },
             ],
             children: {
                 ToAdjust: {
@@ -37,13 +37,13 @@ export const appConfig = defineAppConfig({
             description: 'Administración de la aplicación',
             show: true,
             permissions: [
-                { code: 'HasAccess', name: 'Access admin', errorCode: 312000 }
+                { code: 'HasAccess', name: 'Acceso a la administración', errorCode: 312000 }
             ],
             children: {
                 Users: {
                     code: 'Users',
                     name: 'Usuarios',
-                    description: 'Manage app users',
+                    description: 'Gestionar usuarios de la aplicación',
                     show: true,
                     permissions: [
                         { code: 'List', name: 'Listar usuarios de la aplicación', errorCode: 312100 },
@@ -57,7 +57,7 @@ export const appConfig = defineAppConfig({
                 Roles: {
                     code: 'Roles',
                     name: 'Roles',
-                    description: 'Manage app roles',
+                    description: 'Gestionar roles de la aplicación',
                     show: true,
                     permissions: [
                         { code: 'List', name: 'Listar roles de la aplicación', errorCode: 312200 },
@@ -71,7 +71,7 @@ export const appConfig = defineAppConfig({
                 Profiles: {
                     code: 'Profiles',
                     name: 'Perfiles',
-                    description: 'Manage app profiles',
+                    description: 'Gestionar perfiles de la aplicación',
                     show: true,
                     permissions: [
                         { code: 'List', name: 'Listar perfiles de la aplicación', errorCode: 312300 },
@@ -85,24 +85,24 @@ export const appConfig = defineAppConfig({
                 Mailing: {
                     code: 'Mailing',
                     name: 'Mailing',
-                    description: 'Manage app mailing',
+                    description: 'Gestionar el mailing de la aplicación',
                     show: true,
                     permissions: [
-                        { code: 'HasAccess', name: 'Access mailing settings', errorCode: 312400 }
+                        { code: 'HasAccess', name: 'Acceso a la configuración de mailing', errorCode: 312400 }
                     ],
                     children: {
                         MailSenders: {
                             code: 'MailSenders',
                             name: 'Mail Senders',
-                            description: 'Manage mail senders',
+                            description: 'Gestionar los remitentes de correo de la aplicación',
                             show: true,
                             permissions: [
-                                { code: 'List', name: 'List mail senders', errorCode: 312410 },
-                                { code: 'Create', name: 'Create mail sender', errorCode: 312411 },
-                                { code: 'Edit', name: 'Edit mail sender', errorCode: 312412 },
-                                { code: 'EnterForm', name: 'View mail sender', errorCode: 312413 },
-                                { code: 'Restore', name: 'Restore mail sender', errorCode: 312414 },
-                                { code: 'Delete', name: 'Delete mail sender', errorCode: 312415 }
+                                { code: 'List', name: 'Listar remitentes de correo', errorCode: 312410 },
+                                { code: 'Create', name: 'Crear remitente de correo', errorCode: 312411 },
+                                { code: 'Edit', name: 'Editar remitente de correo', errorCode: 312412 },
+                                { code: 'EnterForm', name: 'Ver remitente de correo', errorCode: 312413 },
+                                { code: 'Restore', name: 'Restaurar remitente de correo', errorCode: 312414 },
+                                { code: 'Delete', name: 'Eliminar remitente de correo', errorCode: 312415 }
                             ]
                         }
                     }

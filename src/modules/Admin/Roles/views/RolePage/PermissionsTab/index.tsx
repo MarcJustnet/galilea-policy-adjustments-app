@@ -3,6 +3,7 @@ import type { Permission } from "@/core/types/models/permission.model"
 import Message from "@/core/ui-components/Message"
 import { PermissionsService } from "@/modules/Admin/Permissions/service"
 import { Icons } from "@justnetsystems/ui-icons"
+import { toast } from "@justnetsystems/ui-toast"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { RolesService } from "../../../service"
@@ -13,10 +14,17 @@ interface PermissionsTabProps {
 
 type FeatureWithPermissions = PermissionsService.GetListToAssign.Response['data'][0]
 
+interface PendingChanges {
+    toAdd: Set<number>
+    toRemove: Set<number>
+}
+
 const PermissionsTab: React.FC<PermissionsTabProps> = ({ roleId }) => {
     const [selectedPermissions, setSelectedPermissions] = useState<Set<number>>(new Set())
+    const [pendingChanges, setPendingChanges] = useState<PendingChanges>({ toAdd: new Set(), toRemove: new Set() })
     const [searchTerm, setSearchTerm] = useState('')
     const [hoveredFeature, setHoveredFeature] = useState<FeatureWithPermissions | null>(null)
+    const [isSaving, setIsSaving] = useState(false)
 
     // Obtener todos los features con permisos
     const { data: featuresData, isLoading: isLoadingFeatures } = useQuery({
@@ -40,6 +48,8 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ roleId }) => {
     useEffect(() => {
         if (assignedData) {
             setSelectedPermissions(new Set(assignedData.map(p => p.id)))
+            // Limpiar cambios pendientes cuando se actualizan los datos
+            setPendingChanges({ toAdd: new Set(), toRemove: new Set() })
         }
     }, [assignedData])
 
@@ -55,6 +65,24 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ roleId }) => {
         return result
     }
 
+    // Función para determinar el estado de un permiso
+    const getPermissionStatus = (permissionId: number): 'assigned' | 'to-add' | 'to-remove' | 'unassigned' => {
+        const isCurrentlyAssigned = selectedPermissions.has(permissionId)
+        const isPendingAdd = pendingChanges.toAdd.has(permissionId)
+        const isPendingRemove = pendingChanges.toRemove.has(permissionId)
+
+        if (isPendingAdd) return 'to-add'
+        if (isPendingRemove) return 'to-remove'
+        if (isCurrentlyAssigned) return 'assigned'
+        return 'unassigned'
+    }
+
+    // Función para obtener el estado efectivo (con cambios pendientes aplicados)
+    const isEffectivelyAssigned = (permissionId: number): boolean => {
+        const status = getPermissionStatus(permissionId)
+        return status === 'assigned' || status === 'to-add'
+    }
+
     // Filtrar features por término de búsqueda
     const filteredFeatures = featuresData ? getAllFeatures(featuresData).filter(feature =>
         feature.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -67,42 +95,108 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ roleId }) => {
     // Calcular total de permisos
     const totalPermissions = filteredFeatures.reduce((acc, feature) => acc + feature.permissions.length, 0)
 
-    const handleTogglePermission = async (permissionId: number) => {
+    const handleTogglePermission = (permissionId: number) => {
         const isCurrentlyAssigned = selectedPermissions.has(permissionId)
+        const isPendingAdd = pendingChanges.toAdd.has(permissionId)
+        const isPendingRemove = pendingChanges.toRemove.has(permissionId)
 
-        try {
-            if (isCurrentlyAssigned) {
-                await RolesService.RemovePermission(roleId, permissionId)
+        setPendingChanges(prev => {
+            const newToAdd = new Set(prev.toAdd)
+            const newToRemove = new Set(prev.toRemove)
+
+            if (isPendingAdd) {
+                // Si estaba pendiente de añadir, cancelamos ese cambio
+                newToAdd.delete(permissionId)
+            } else if (isPendingRemove) {
+                // Si estaba pendiente de quitar, cancelamos ese cambio
+                newToRemove.delete(permissionId)
+            } else if (isCurrentlyAssigned) {
+                // Si está asignado, lo marcamos para quitar
+                newToRemove.add(permissionId)
             } else {
-                await RolesService.AddPermission(roleId, permissionId)
+                // Si no está asignado, lo marcamos para añadir
+                newToAdd.add(permissionId)
             }
+
+            return { toAdd: newToAdd, toRemove: newToRemove }
+        })
+    }
+
+    const handleToggleAllFeaturePermissions = (feature: FeatureWithPermissions) => {
+        const featurePermissionIds = feature.permissions.map(p => p.id)
+        // Verificar si todos estarían asignados después de aplicar cambios pendientes
+        const allEffectivelyAssigned = featurePermissionIds.every(id => isEffectivelyAssigned(id))
+
+        setPendingChanges(prev => {
+            const newToAdd = new Set(prev.toAdd)
+            const newToRemove = new Set(prev.toRemove)
+
+            featurePermissionIds.forEach(id => {
+                const isCurrentlyAssigned = selectedPermissions.has(id)
+
+                // Primero, limpiamos cualquier cambio pendiente para este permiso
+                newToAdd.delete(id)
+                newToRemove.delete(id)
+
+                if (allEffectivelyAssigned) {
+                    // Si todos están efectivamente asignados, marcar para quitar
+                    if (isCurrentlyAssigned) {
+                        newToRemove.add(id)
+                    }
+                    // Si no está asignado, no hacemos nada (ya no está en pendientes)
+                } else {
+                    // Si no todos están asignados, marcar para añadir los que no lo están
+                    if (!isCurrentlyAssigned) {
+                        newToAdd.add(id)
+                    }
+                    // Si ya está asignado, no hacemos nada
+                }
+            })
+
+            return { toAdd: newToAdd, toRemove: newToRemove }
+        })
+    }
+
+    const handleConfirmChanges = async () => {
+        const idsToAdd = Array.from(pendingChanges.toAdd)
+        const idsToRemove = Array.from(pendingChanges.toRemove)
+
+        if (idsToAdd.length === 0 && idsToRemove.length === 0) {
+            toast.error('No hay cambios pendientes')
+            return
+        }
+
+        setIsSaving(true)
+        try {
+            const promises: Promise<any>[] = []
+
+            if (idsToAdd.length > 0) {
+                promises.push(RolesService.AddPermissions(roleId, idsToAdd))
+            }
+
+            if (idsToRemove.length > 0) {
+                promises.push(RolesService.RemovePermissions(roleId, idsToRemove))
+            }
+
+            await Promise.all(promises)
             await refetch()
+
+            toast.success(`Cambios aplicados: ${idsToAdd.length} añadidos, ${idsToRemove.length} eliminados`)
         } catch (error) {
-            console.error('Error toggling permission:', error)
+            console.error('Error applying changes:', error)
+            toast.error('Error al aplicar los cambios')
+        } finally {
+            setIsSaving(false)
         }
     }
 
-    const handleToggleAllFeaturePermissions = async (feature: FeatureWithPermissions) => {
-        const featurePermissionIds = feature.permissions.map(p => p.id)
-        const allAssigned = featurePermissionIds.every(id => selectedPermissions.has(id))
-
-        try {
-            if (allAssigned) {
-                // Remover todos los permisos del feature
-                await Promise.all(featurePermissionIds.map(id => RolesService.RemovePermission(roleId, id)))
-            } else {
-                // Añadir todos los permisos del feature
-                await Promise.all(featurePermissionIds.map(id => RolesService.AddPermission(roleId, id)))
-            }
-            await refetch()
-        } catch (error) {
-            console.error('Error toggling feature permissions:', error)
-        }
+    const handleCancelChanges = () => {
+        setPendingChanges({ toAdd: new Set(), toRemove: new Set() })
     }
 
     if (isLoadingFeatures || isLoadingAssigned) {
         return (
-            <div style={{ padding: '2rem', display: 'flex', justifyContent: 'center' }}>
+            <div className="assignment assignment--loading">
                 <Loader />
             </div>
         )
@@ -110,16 +204,16 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ roleId }) => {
 
     if (!featuresData) {
         return (
-            <div style={{ padding: '2rem' }}>
+            <div className="assignment__error">
                 <Message type="warning" message="No se pudieron cargar los permisos" />
             </div>
         )
     }
 
     return (
-        <div className="permissions-tab" style={{ padding: '1.5rem' }}>
+        <div className="assignment">
             {/* Barra de búsqueda */}
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div className="assignment__search">
                 <input
                     type="text"
                     className="form__input"
@@ -130,123 +224,127 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ roleId }) => {
             </div>
 
             {/* Layout de dos columnas */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', minHeight: '400px' }}>
+            <div className="assignment__layout">
                 {/* Columna izquierda - Lista de Features */}
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.5rem',
-                        maxHeight: '500px',
-                        overflowY: 'auto',
-                        paddingRight: '0.5rem'
-                    }}
-                >
-                    <h3 style={{ fontSize: '0.875rem', fontWeight: 600, color: '#64748b', marginBottom: '0.5rem' }}>
-                        Features ({filteredFeatures.length})
+                <div className="assignment__list">
+                    <h3 className="assignment__list-header">
+                        Módulos ({filteredFeatures.length})
                     </h3>
 
-                    {filteredFeatures.map((feature) => {
-                        const featurePermissionIds = feature.permissions.map(p => p.id)
-                        const assignedCount = featurePermissionIds.filter(id => selectedPermissions.has(id)).length
-                        const totalCount = featurePermissionIds.length
-                        const allAssigned = totalCount > 0 && assignedCount === totalCount
-                        const someAssigned = assignedCount > 0 && assignedCount < totalCount
-                        const isHovered = hoveredFeature?.id === feature.id
+                    <div className="assignment__list-items">
 
-                        return (
-                            <div
-                                key={feature.id}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    padding: '0.875rem',
-                                    backgroundColor: isHovered ? '#f0f9ff' : allAssigned ? '#f0fdf4' : someAssigned ? '#fef3c7' : '#f9fafb',
-                                    border: `1px solid ${isHovered ? '#3b82f6' : allAssigned ? '#86efac' : someAssigned ? '#fcd34d' : '#e5e7eb'}`,
-                                    borderRadius: '0.375rem',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease'
-                                }}
-                                onMouseEnter={() => setHoveredFeature(feature)}
-                                onClick={() => totalCount > 0 && handleToggleAllFeaturePermissions(feature)}
-                            >
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{
-                                        fontWeight: 600,
-                                        fontSize: '0.875rem',
-                                        color: isHovered ? '#3b82f6' : '#1f2937',
-                                        marginBottom: totalCount > 0 ? '0.25rem' : 0,
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap'
-                                    }}>
-                                        {feature.name}
-                                    </div>
-                                    {totalCount > 0 && (
-                                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                                            {assignedCount} / {totalCount} permisos
+                        {filteredFeatures.map((feature) => {
+                            const featurePermissionIds = feature.permissions.map(p => p.id)
+                            const totalCount = featurePermissionIds.length
+
+                            // Contar por estado
+                            const effectivelyAssignedCount = featurePermissionIds.filter(id => isEffectivelyAssigned(id)).length
+                            const toAddCount = featurePermissionIds.filter(id => pendingChanges.toAdd.has(id)).length
+                            const toRemoveCount = featurePermissionIds.filter(id => pendingChanges.toRemove.has(id)).length
+
+                            const allEffectivelyAssigned = totalCount > 0 && effectivelyAssignedCount === totalCount
+                            const someEffectivelyAssigned = effectivelyAssignedCount > 0 && effectivelyAssignedCount < totalCount
+                            const hasPendingChanges = toAddCount > 0 || toRemoveCount > 0
+                            const isHovered = hoveredFeature?.id === feature.id
+
+                            // Determinar clase de estado
+                            let stateClass = ''
+                            let IconComponent = null
+
+                            if (hasPendingChanges) {
+                                if (toAddCount > 0 && toRemoveCount === 0) {
+                                    stateClass = 'assignment__list-item--pending-add'
+                                    IconComponent = Icons.Plus
+                                } else if (toRemoveCount > 0 && toAddCount === 0) {
+                                    stateClass = 'assignment__list-item--pending-remove'
+                                    IconComponent = Icons.Minus
+                                } else {
+                                    stateClass = 'assignment__list-item--pending-mixed'
+                                    IconComponent = Icons.Pencil
+                                }
+                            } else if (allEffectivelyAssigned) {
+                                stateClass = 'assignment__list-item--assigned'
+                                IconComponent = Icons.Check
+                            } else if (someEffectivelyAssigned) {
+                                stateClass = 'assignment__list-item--partial'
+                                IconComponent = Icons.Minus
+                            }
+
+                            const hoveredClass = isHovered ? 'assignment__list-item--hovered' : ''
+
+                            return (
+                                <div
+                                    key={feature.id}
+                                    className={`assignment__list-item ${stateClass} ${hoveredClass}`}
+                                    onMouseEnter={() => setHoveredFeature(feature)}
+                                    onClick={() => totalCount > 0 && handleToggleAllFeaturePermissions(feature)}
+                                >
+                                    <div className="assignment__list-item__content">
+                                        <div className="assignment__list-item__title">
+                                            {feature.name}
                                         </div>
+                                        {totalCount > 0 && (
+                                            <div className="assignment__list-item__subtitle">
+                                                {effectivelyAssignedCount} / {totalCount} permisos
+                                                {hasPendingChanges && (
+                                                    <span className="assignment__list-item__counter">
+                                                        ({toAddCount > 0 && `+${toAddCount}`}{toAddCount > 0 && toRemoveCount > 0 && ' '}{toRemoveCount > 0 && `-${toRemoveCount}`})
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    {IconComponent && (
+                                        <IconComponent className="assignment__list-item__icon" />
                                     )}
                                 </div>
-                                {allAssigned && (
-                                    <Icons.Check style={{ color: '#22c55e', fontSize: '1.25rem', flexShrink: 0 }} />
-                                )}
-                                {someAssigned && !allAssigned && (
-                                    <Icons.Minus style={{ color: '#f59e0b', fontSize: '1.25rem', flexShrink: 0 }} />
-                                )}
-                            </div>
-                        )
-                    })}
+                            )
+                        })}
 
-                    {filteredFeatures.length === 0 && (
-                        <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
-                            No se encontraron features
-                        </div>
-                    )}
+                        {filteredFeatures.length === 0 && (
+                            <div className="assignment__list-empty">
+                                No se encontraron features
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Columna derecha - Permisos del Feature Seleccionado */}
-                <div
-                    style={{
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '0.375rem',
-                        padding: '1rem',
-                        backgroundColor: '#fafafa',
-                        maxHeight: '500px',
-                        overflowY: 'auto'
-                    }}
-                >
+                <div className="assignment__details">
                     {hoveredFeature ? (
                         <>
-                            <h3 style={{
-                                fontSize: '0.875rem',
-                                fontWeight: 600,
-                                color: '#1f2937',
-                                marginBottom: '1rem',
-                                paddingBottom: '0.75rem',
-                                borderBottom: '1px solid #e5e7eb'
-                            }}>
+                            <h3 className="assignment__details-header">
                                 {hoveredFeature.name} - Permisos ({hoveredFeature.permissions.length})
                             </h3>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div className="assignment__details-items">
                                 {hoveredFeature.permissions.map((permission: Permission) => {
-                                    const isAssigned = selectedPermissions.has(permission.id)
+                                    const status = getPermissionStatus(permission.id)
+                                    const isEffectivelyChecked = status === 'assigned' || status === 'to-add'
+
+                                    // Determinar clase de estado
+                                    let stateClass = ''
+                                    let IconComponent = null
+
+                                    switch (status) {
+                                        case 'assigned':
+                                            stateClass = 'assignment__details-item--assigned'
+                                            IconComponent = Icons.Check
+                                            break
+                                        case 'to-add':
+                                            stateClass = 'assignment__details-item--pending-add'
+                                            IconComponent = Icons.Plus
+                                            break
+                                        case 'to-remove':
+                                            stateClass = 'assignment__details-item--pending-remove'
+                                            IconComponent = Icons.Minus
+                                            break
+                                    }
 
                                     return (
                                         <div
                                             key={permission.id}
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'flex-start',
-                                                padding: '0.75rem',
-                                                backgroundColor: isAssigned ? '#f0fdf4' : '#ffffff',
-                                                border: `1px solid ${isAssigned ? '#86efac' : '#e5e7eb'}`,
-                                                borderRadius: '0.375rem',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s ease'
-                                            }}
+                                            className={`assignment__details-item ${stateClass}`}
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 handleTogglePermission(permission.id)
@@ -254,26 +352,26 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ roleId }) => {
                                         >
                                             <input
                                                 type="checkbox"
-                                                checked={isAssigned}
+                                                checked={isEffectivelyChecked}
                                                 onChange={() => handleTogglePermission(permission.id)}
-                                                style={{ marginRight: '0.75rem', marginTop: '0.125rem', flexShrink: 0 }}
+                                                className="assignment__details-item__checkbox"
                                                 onClick={(e) => e.stopPropagation()}
                                             />
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+                                            <div className="assignment__details-item__content">
+                                                <div className="assignment__details-item__title">
                                                     {permission.name}
                                                 </div>
-                                                <div style={{ fontSize: '0.75rem', color: '#64748b', fontFamily: 'monospace' }}>
+                                                <div className="assignment__details-item__code">
                                                     {permission.code}
                                                 </div>
                                                 {permission.description && (
-                                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                                                    <div className="assignment__details-item__description">
                                                         {permission.description}
                                                     </div>
                                                 )}
                                             </div>
-                                            {isAssigned && (
-                                                <Icons.Check style={{ color: '#22c55e', fontSize: '1rem', flexShrink: 0, marginLeft: '0.5rem' }} />
+                                            {IconComponent && (
+                                                <IconComponent className="assignment__details-item__icon" />
                                             )}
                                         </div>
                                     )
@@ -281,33 +379,122 @@ const PermissionsTab: React.FC<PermissionsTabProps> = ({ roleId }) => {
                             </div>
 
                             {hoveredFeature.permissions.length === 0 && (
-                                <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.875rem' }}>
+                                <div className="assignment__details-empty">
                                     Este feature no tiene permisos
                                 </div>
                             )}
                         </>
                     ) : (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            height: '100%',
-                            color: '#94a3b8',
-                            fontSize: '0.875rem',
-                            textAlign: 'center',
-                            padding: '2rem'
-                        }}>
+                        <div className="assignment__details-empty">
                             Pasa el ratón sobre un feature para ver sus permisos
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Resumen */}
-            <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#f0f9ff', borderRadius: '0.375rem', border: '1px solid #bfdbfe' }}>
-                <div style={{ fontSize: '0.875rem', color: '#1e40af' }}>
-                    <strong>{selectedPermissions.size}</strong> de <strong>{totalPermissions}</strong> permisos asignados
+            {/* Resumen y Cambios Pendientes */}
+            <div className="assignment__summary">
+                {/* Resumen básico */}
+                <div className="assignment__summary-info">
+                    <div className="assignment__summary-info__text">
+                        <strong>{selectedPermissions.size}</strong> de <strong>{totalPermissions}</strong> permisos asignados actualmente
+                    </div>
                 </div>
+
+                {/* Listado de cambios pendientes */}
+                {(pendingChanges.toAdd.size > 0 || pendingChanges.toRemove.size > 0) && (
+                    <div className="assignment__changes">
+                        <h4 className="assignment__changes-header">
+                            <Icons.TriangleExclamation className="assignment__changes-header__icon" />
+                            Cambios Pendientes
+                        </h4>
+
+                        <div className="assignment__changes-grid">
+                            {/* Permisos a añadir */}
+                            {pendingChanges.toAdd.size > 0 && (
+                                <div className="assignment__changes-column">
+                                    <div className="assignment__changes-column__header assignment__changes-column__header--add">
+                                        <Icons.Plus className="assignment__changes-column__header__icon" />
+                                        A Añadir ({pendingChanges.toAdd.size})
+                                    </div>
+                                    <div className="assignment__changes-list assignment__changes-list--add">
+                                        {Array.from(pendingChanges.toAdd).map(permId => {
+                                            const permission = featuresData
+                                                ?.flatMap(f => getAllFeatures([f]))
+                                                .flatMap(f => f.permissions)
+                                                .find(p => p.id === permId)
+                                            return permission ? (
+                                                <div key={permId} className="assignment__changes-item assignment__changes-item--add">
+                                                    <div className="assignment__changes-item__title">{permission.name}</div>
+                                                    <div className="assignment__changes-item__code">{permission.code}</div>
+                                                </div>
+                                            ) : null
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Permisos a quitar */}
+                            {pendingChanges.toRemove.size > 0 && (
+                                <div className="assignment__changes-column">
+                                    <div className="assignment__changes-column__header assignment__changes-column__header--remove">
+                                        <Icons.Minus className="assignment__changes-column__header__icon" />
+                                        A Quitar ({pendingChanges.toRemove.size})
+                                    </div>
+                                    <div className="assignment__changes-list assignment__changes-list--remove">
+                                        {Array.from(pendingChanges.toRemove).map(permId => {
+                                            const permission = featuresData
+                                                ?.flatMap(f => getAllFeatures([f]))
+                                                .flatMap(f => f.permissions)
+                                                .find(p => p.id === permId)
+                                            return permission ? (
+                                                <div key={permId} className="assignment__changes-item assignment__changes-item--remove">
+                                                    <div className="assignment__changes-item__title">{permission.name}</div>
+                                                    <div className="assignment__changes-item__code">{permission.code}</div>
+                                                </div>
+                                            ) : null
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Botones de acción */}
+                        <div className="assignment__actions">
+                            <button
+                                onClick={handleCancelChanges}
+                                disabled={isSaving}
+                                className="button button--secondary"
+                            >
+                                Cancelar Cambios
+                            </button>
+                            <button
+                                onClick={handleConfirmChanges}
+                                disabled={isSaving}
+                                className="button button--primary"
+                            >
+                                {isSaving ? (
+                                    <>
+                                        <Loader />
+                                        Aplicando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Icons.Check />
+                                        Confirmar Cambios
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Mensaje cuando no hay cambios pendientes */}
+                {pendingChanges.toAdd.size === 0 && pendingChanges.toRemove.size === 0 && (
+                    <div className="assignment__summary-empty">
+                        No hay cambios pendientes. Selecciona permisos para añadir o quitar.
+                    </div>
+                )}
             </div>
         </div>
     )

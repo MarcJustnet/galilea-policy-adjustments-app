@@ -10,9 +10,9 @@
     &__header {
         display: flex;
         gap: $spacing-xs;
-        padding: $spacing-md $spacing-lg;
+        // padding: $spacing-md $spacing-lg;
         background-color: $bg-lighter;
-        border-bottom: 2px solid $border-light;
+        border-bottom: 1px solid $border-light; //2px solid $border-light;
         overflow-x: auto;
         overflow-y: hidden;
         
@@ -38,7 +38,7 @@
     &__tab {
         position: relative;
         flex-shrink: 0;
-        padding: $spacing-md $spacing-xl;
+        padding: $spacing-lg $spacing-xl;
         font-size: $font-base;
         font-weight: $font-medium;
         color: $text-muted;
@@ -59,13 +59,13 @@
         &--active {
             color: $color-primary;
             font-weight: $font-semibold;
-            background-color: $bg-white;
+            // background-color: $bg-white;
             
             /* Active indicator line */
             &::after {
                 content: '';
                 position: absolute;
-                bottom: -2px;
+                bottom: 0px;
                 left: 0;
                 right: 0;
                 height: 2px;
@@ -100,7 +100,7 @@
     /* Tabs Content */
     &__content {
         flex: 1;
-        padding: $spacing-2xl;
+        // padding: $spacing-2xl;
         background-color: $bg-white;
         border-radius: 0 0 $radius-lg $radius-lg;
         min-height: 200px;
@@ -132,7 +132,7 @@
         }
 
         .tabs__content {
-            padding: $spacing-xl;
+            // padding: $spacing-xl;
         }
     }
 
@@ -219,7 +219,7 @@
         }
 
         &__content {
-            padding: $spacing-xl;
+            // padding: $spacing-xl;
         }
 
         /* Vertical tabs become horizontal on mobile */

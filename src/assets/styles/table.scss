@@ -1,15 +1,13 @@
-/* Table Component Styles - Inspired by nodoss PHP project */
+/* Table Component Styles - Professional shadcn-inspired design */
 @use "./variables" as *;
 
 .table {
     width: 100%;
     background-color: $bg-white;
-    border-radius: $radius-lg;
-    border: 1px solid $border-light;
+    border-radius: $radius-md;
+    border: 1px solid $color-slate-200;
     overflow: hidden;
-    box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.05),
-        0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
 
@@ -17,60 +15,80 @@
     &__scroll-container {
         overflow-x: auto;
         overflow-y: auto;
-        max-height: calc(100vh - 300px); /* Adjust based on your layout */
+        max-height: calc(100vh - 300px);
+        position: relative;
     }
 
     /* Table Header */
     &__header {
-        background-color: $color-gray-50;
-        border-bottom: 1px solid $border-light;
+        position: sticky;
+        top: 0;
+        z-index: $z-sticky;
+        background-color: $color-slate-50;
+        border-bottom: 1px solid $color-slate-200;
         min-width: max-content;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     }
 
     /* Table Body */
     &__body {
         background-color: $bg-white;
         min-width: max-content;
+
+        &__row {
+            height: 55px;
+            max-height: 55px;
+        }
     }
 
     /* Table Controls */
     &__controls {
-        background-color: #fdfdfd;
-        border-bottom: 1px solid $border-light;
+        background-color: $color-slate-50;
+        border-bottom: 1px solid $color-slate-200;
         padding: 0.75rem 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 1rem;
+        gap: $spacing-md;
 
         input[type="text"] {
             width: 300px;
-            font-size: 0.8125rem;
-            padding: 0.4rem 0.75rem;
+            font-size: $font-sm;
+            padding: 0.5rem 0.75rem;
         }
 
         .button {
-            font-size: 0.8125rem;
-            padding: 0.4rem 0.875rem;
+            font-size: $font-sm;
+            padding: 0.5rem 0.875rem;
+        }
+
+        &__left {
+            display: flex;
+            gap: $spacing-sm;
+        }
+
+        &__right {
+            display: flex;
+            gap: $spacing-sm;
         }
     }
 
     /* Table Footer */
     &__footer {
-        background-color: #fdfdfd;
-        border-top: 1px solid $border-light;
-        padding: $spacing-lg;
+        background-color: $color-slate-50;
+        border-top: 1px solid $color-slate-200;
+        padding: $spacing-md $spacing-lg;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: $font-base;
-        color: $text-secondary;
+        font-size: $font-sm;
+        color: $color-slate-600;
     }
 
     /* Pagination Info */
     &__pagination-info {
-        font-size: $font-base;
-        color: $text-secondary;
+        font-size: $font-sm;
+        color: $color-slate-600;
     }
 
     /* Pagination Controls */
@@ -95,9 +113,9 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: $spacing-lg;
-        padding: 0.9rem $spacing-lg;
-        border-bottom: 1px solid $border-light;
-        transition: background-color $transition-fast;
+        padding: 0.35rem $spacing-lg;
+        border-bottom: 1px solid $color-slate-200;
+        transition: background-color 0.15s ease;
         min-width: 100%;
         width: max-content;
 
@@ -111,20 +129,20 @@
             user-select: none;
 
             &:hover {
-                background-color: $color-gray-100;
+                background-color: $color-slate-50;
             }
 
             &:active {
-                background-color: $color-gray-200;
+                background-color: $color-slate-100;
             }
         }
 
         /* Row in header - not hoverable */
         .table__header & {
-            font-weight: $font-semibold;
-            color: $color-gray-600;
+            font-weight: $font-medium;
+            color: $color-slate-600;
             cursor: default;
-            padding: 0.9rem $spacing-lg;
+            padding: 0.75rem $spacing-lg;
 
             &:hover {
                 background-color: transparent;
@@ -136,15 +154,15 @@
     &__cell {
         display: flex;
         align-items: center;
-        font-size: $font-base;
-        color: $text-secondary;
+        font-size: $font-sm;
+        color: $color-slate-700;
         overflow: hidden;
         text-overflow: ellipsis;
 
         /* Cell in header */
         .table__header & {
-            font-weight: $font-semibold;
-            color: $color-gray-600;
+            font-weight: $font-medium;
+            color: $color-slate-600;
             text-transform: uppercase;
             font-size: $font-sm;
             letter-spacing: 0.05em;
@@ -172,6 +190,11 @@
     &__actions-menu {
         position: relative;
         display: inline-block;
+
+        /* Header variant - positioned next to column title */
+        &--header {
+            margin-left: $spacing-sm;
+        }
     }
 
     &__actions-dropdown {
@@ -193,6 +216,7 @@
             position: fixed;
             right: auto;
             top: auto;
+            z-index: $z-fixed; // Higher z-index for fixed positioned dropdowns (above sticky header)
         }
     }
 
@@ -256,64 +280,81 @@
 
     /* Loading State */
     &__loading {
+        position: sticky;
+        left: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         padding: 3rem;
         min-height: 200px;
+        color: $color-slate-500;
     }
 
     /* Error State */
     &__error {
+        position: sticky;
+        left: 0;
         padding: 2rem;
+        color: $color-slate-600;
     }
 
     /* Empty State */
     &__empty {
+        position: sticky;
+        left: 0;
         padding: 3rem;
         text-align: center;
+        color: $color-slate-500;
+        font-size: $font-sm;
     }
 
     /* Links in cells */
     &__link {
-        color: $text-primary;
+        color: $color-primary;
         font-weight: $font-medium;
         text-decoration: none;
-        transition: text-decoration $transition-fast;
+        transition: color 0.15s ease;
 
         &:hover {
+            color: $color-primary-hover;
             text-decoration: underline;
         }
     }
 
     /* Chips/Badges in cells */
     &__chip {
-        display: inline-block;
-        padding: 0.25rem 0.6rem;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.125rem 0.5rem;
         font-size: $font-xs;
-        font-weight: $font-semibold;
+        font-weight: $font-medium;
         border-radius: $radius-full;
-        line-height: 1.2;
+        line-height: 1.5;
+        border: 1px solid transparent;
 
         // Status variants
         &--success {
-            color: $color-success;
-            background-color: rgba($color-success, 0.1);
+            color: #166534;
+            background-color: #f0fdf4;
+            border-color: #86efac;
         }
 
         &--danger {
-            color: $color-danger;
-            background-color: rgba($color-danger, 0.1);
+            color: #991b1b;
+            background-color: #fef2f2;
+            border-color: #fca5a5;
         }
 
         &--warning {
-            color: $color-warning;
-            background-color: rgba($color-warning, 0.1);
+            color: #92400e;
+            background-color: #fffbeb;
+            border-color: #fde68a;
         }
 
         &--default {
-            color: $color-gray-600;
-            background-color: rgba($color-gray-600, 0.1);
+            color: $color-slate-700;
+            background-color: $color-slate-100;
+            border-color: $color-slate-200;
         }
     }
 
@@ -378,7 +419,7 @@
         .table__row {
             grid-template-columns: 100px // Número
                 150px // Póliza
-                200px // Cliente
+                300px // Cliente
                 120px // NIF
                 150px // Compañía
                 180px // Ramo
@@ -393,8 +434,8 @@
     /* Roles specific styling */
     &--roles {
         .table__row {
-            grid-template-columns: 120px // Código
-                200px // Nombre
+            grid-template-columns: 220px // Código
+                240px // Nombre
                 minmax(250px, 1fr) // Descripción - flexible
                 100px // Sistema
                 48px; // Actions

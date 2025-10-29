@@ -61,6 +61,7 @@ $color-gray-800: #1f2937;
 $color-gray-900: #111827;
 
 /* Slate Colors (for scanner) */
+$color-slate-50: #f9fafb;
 $color-slate-100: #f1f5f9;
 $color-slate-200: #e2e8f0;
 $color-slate-300: #cbd5e1;
@@ -100,7 +101,7 @@ $text-white: #ffffff;
    BACKGROUND COLORS
    ============================================ */
 $bg-white: #ffffff;
-$bg-light: #f9fafb;
+$bg-light: #f9f9f9;
 $bg-lighter: #f3f4f6;
 $bg-gray: #e5e7eb;
 
@@ -212,9 +213,9 @@ $opacity-muted: 0.6;
    LAYOUT
    ============================================ */
 
-$layout-header-height: 65px;
+$layout-header-height: 50px;
 $layout-sidebar-mobile-height: 70px;
-$layout-sidebar-desktop-width: 280px;
+$layout-sidebar-desktop-width: 210px;
 $layout-page-desktop-height: calc(100dvh - $layout-header-height);
 $layout-page-mobile-height: calc(100dvh - $layout-header-height - $layout-sidebar-mobile-height);
 $layout-page-desktop-width: calc(100vw - $layout-sidebar-desktop-width);

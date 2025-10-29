@@ -1,3 +1,3 @@
 export const Version: React.FC = () => {
-  return <span className='version'>v{import.meta.env.VITE_VERSION}</span>
+  return <span className='app-version'>v{import.meta.env.VITE_VERSION}</span>
 }

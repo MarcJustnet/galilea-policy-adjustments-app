@@ -3,45 +3,50 @@
 
 /* Admin Page Layout */
 .page--admin {
+    // background-color: $color-slate-50;
+
     .page__header {
-        margin-bottom: $spacing-4xl;
+        // margin-bottom: $spacing-lg;
     }
 
     .page__title {
-        font-size: $font-4xl;
-        font-weight: $font-bold;
-        color: $text-primary;
-        margin-bottom: $spacing-sm;
+        font-size: $font-3xl;
+        font-weight: $font-semibold;
+        color: $color-slate-900;
+        margin-bottom: $spacing-xs;
+        letter-spacing: -0.025em;
     }
 
     .page__subtitle {
-        font-size: $font-lg;
-        color: $text-muted;
+        font-size: $font-base;
+        color: $color-slate-600;
         font-weight: $font-normal;
     }
 
     .page__content {
         display: flex;
         flex-direction: column;
-        gap: $spacing-4xl;
+        gap: $spacing-xl;
     }
 }
 
 /* Admin Section */
 .admin-section {
     &__title {
-        font-size: $font-xl;
+        font-size: $font-lg;
         font-weight: $font-semibold;
-        color: $text-secondary;
-        margin-bottom: $spacing-xl;
-        padding-bottom: $spacing-md;
-        border-bottom: 2px solid $border-light;
+        color: $color-slate-700;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        margin-bottom: $spacing-lg;
+        padding-bottom: $spacing-sm;
+        border-bottom: 1px solid $color-slate-200;
     }
 
     &__grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: $spacing-xl;
+        gap: $spacing-lg;
 
         @media (max-width: $breakpoint-md) {
             grid-template-columns: 1fr;
@@ -53,83 +58,90 @@
 .admin-card {
     display: flex;
     align-items: center;
-    gap: $spacing-xl;
-    padding: $spacing-2xl;
+    gap: $spacing-lg;
+    padding: $spacing-xl;
     background-color: $bg-white;
-    border: 1px solid $border-light;
-    border-radius: $radius-xl;
+    border: 1px solid $color-slate-200;
+    border-radius: $radius-lg;
     cursor: pointer;
-    transition: 
-        transform $transition-fast,
-        box-shadow $transition-fast,
-        border-color $transition-fast;
-    box-shadow:
-        0 1px 3px rgba(0, 0, 0, 0.05),
-        0 1px 2px rgba(0, 0, 0, 0.03);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 
     &:hover {
-        transform: translateY(-2px);
-        box-shadow:
-            0 10px 25px rgba(0, 0, 0, 0.08),
-            0 4px 10px rgba(0, 0, 0, 0.06);
-        border-color: $color-primary-light;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border-color: $color-slate-300;
 
         .admin-card__icon {
-            background: linear-gradient(135deg, $color-primary 0%, $color-primary-hover 100%);
-            transform: scale(1.05);
+            background-color: $color-slate-200;//$color-primary;
+            border-color: $color-slate-300; // $color-primary;
         }
 
         .admin-card__arrow {
-            transform: translateX(4px);
-            color: $color-primary;
+            transform: translateX(2px);
+            color: $color-slate-700;
+        }
+
+        .admin-card__title {
+            // color: $color-primary;
+            // underline from left animation on hover
+            // text-decoration: underline;
+
+            color: $color-slate-900;
+            text-decoration: underline;
+
+            text-underline-offset: 4px;
+            text-decoration-thickness: 1px;
         }
     }
 
     &:active {
         transform: translateY(0);
-        box-shadow:
-            0 4px 10px rgba(0, 0, 0, 0.06),
-            0 2px 4px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     }
 
     /* Icon Container */
     &__icon {
         flex-shrink: 0;
-        width: 56px;
-        height: 56px;
+        width: 48px;
+        height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
-        border-radius: $radius-xl;
-        color: $text-white;
-        transition: 
-            transform $transition-fast,
-            background $transition-base;
+        background-color: $color-slate-100;
+        border: 1px solid $color-slate-200;
+        border-radius: $radius-lg;
+        color: $color-slate-700;
+        transition: all 0.15s ease;
 
         svg {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
         }
     }
 
     /* Content */
     &__content {
         flex: 1;
-        min-width: 0; // Permite que el texto se trunque si es necesario
+        min-width: 0;
     }
 
     &__title {
-        font-size: $font-lg;
+        font-size: $font-base;
         font-weight: $font-semibold;
-        color: $text-primary;
-        margin-bottom: $spacing-xs;
+        color: $color-slate-900;
+        margin: 0;
+        margin-bottom: 0.25rem;
         line-height: 1.4;
+        transition: color 0.15s ease;
     }
 
     &__description {
-        font-size: $font-base;
-        color: $text-muted;
+        font-size: $font-sm;
+        color: $color-slate-600;
         line-height: 1.5;
         margin: 0;
     }
@@ -140,16 +152,16 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
-        height: 32px;
-        color: $text-light;
-        transition: 
-            transform $transition-fast,
-            color $transition-fast;
+        width: 24px;
+        height: 24px;
+        color: $color-slate-400;
+        transition:
+            transform 0.15s ease,
+            color 0.15s ease;
 
         svg {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
         }
     }
 }

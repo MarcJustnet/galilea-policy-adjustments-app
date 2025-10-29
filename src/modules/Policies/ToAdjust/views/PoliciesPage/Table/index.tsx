@@ -35,14 +35,14 @@ const TableControls: React.FC = () => {
 
     return (
         <div className="table__controls">
-            <Input
-                type="text"
-                placeholder="Filtro general..."
-                value={filter}
-                onChange={onChangeFilter}
-                debounce={300}
-            />
-            <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto' }}>
+            <div className="table__controls__left">
+                <Input
+                    type="text"
+                    placeholder="Filtro general..."
+                    value={filter}
+                    onChange={onChangeFilter}
+                    debounce={300}
+                />
                 {hasActiveFilters && (
                     <button
                         className="button button--secondary"
@@ -51,6 +51,8 @@ const TableControls: React.FC = () => {
                         <Icons.X /> Limpiar filtros
                     </button>
                 )}
+            </div>
+            <div className="table__controls__right">
             </div>
         </div>
     )

@@ -32,19 +32,23 @@ const TableControls: React.FC = () => {
 
     return (
         <div className="table__controls">
-            <Input
-                type="text"
-                placeholder="Filtro general..."
-                value={filter}
-                onChange={onChangeFilter}
-                debounce={300}
-            />
-            <button
-                className="button button--primary"
-                onClick={() => navigate('0')}
-            >
-                <Icons.Plus /> Nuevo registro
-            </button>
+            <div className="table__controls__left">
+                <Input
+                    type="text"
+                    placeholder="Filtro general..."
+                    value={filter}
+                    onChange={onChangeFilter}
+                    debounce={300}
+                />
+            </div>
+            <div className="table__controls__right">
+                <button
+                    className="button button--primary"
+                    onClick={() => navigate('0')}
+                >
+                    <Icons.Plus /> Nuevo registro
+                </button>
+            </div>
         </div>
     )
 }
